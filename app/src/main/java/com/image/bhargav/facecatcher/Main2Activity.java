@@ -100,38 +100,13 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         return destination;
     }
 
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-        Mat imageRGB = inputFrame.rgba();
-        Mat flipped = new Mat();
-
-        if(isFlipOn){
-            Core.flip(imageRGB, flipped, 1);
-            imageRGB.release();
-        }else{
-            flipped = imageRGB;
-        }
-
-        //imageRGB.release();
-
-        Mat blurred = getBlurredImage(flipped);//optional. can use the hsv directly from the rgb without the blur too
-        //flipped.release();
-        Mat hsvImage = getHSVImage(blurred);
-        blurred.release();
-
-        //get a mask
-        Mat masked = new Mat();
-        //Core.inRange(hsvImage, new Scalar(17, 168, 112), new Scalar(255, 255, 255), masked);//for yellow ball
-        Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked);//for yellow ball - re calibrated
-        //Core.inRange(hsvImage, new Scalar(37, 96, 143), new Scalar(65, 211, 232), masked);//for green tape
-        hsvImage.release();
-
+    public Mat getMorphedMat(Mat masked){
         Mat morphOutput = new Mat();
 
         //erode
         Mat erosionElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(34, 34));
 
-        Imgproc.erode(masked, morphOutput, erosionElement);//use blurred instead of masked here to display the image without mask
+        Imgproc.erode(masked, morphOutput, erosionElement);//use blurred instead of masked1 here to display the image without mask
         Imgproc.erode(masked, morphOutput, erosionElement);
 
         erosionElement.release();
@@ -144,34 +119,81 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
 
         dilateElement.release();
 
-        masked.release();
+        //masked.release();
 
-        Mat contoursFrame = morphOutput.clone();
-        morphOutput.release();
+        return morphOutput;
+    }
+
+    public List<MatOfPoint> getContours(Mat frame){
         final List<MatOfPoint> contours  = new ArrayList<>();
         final Mat hierarchy = new Mat();
-        Imgproc.findContours(contoursFrame, contours , hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        contoursFrame.release();
+        Imgproc.findContours(frame, contours , hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        //frame.release();
+        return contours;
+    }
+
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
+        Mat imageRGB = inputFrame.rgba();
+        Mat flipped = new Mat();
+
+        if(isFlipOn){
+            Core.flip(imageRGB, flipped, 1);
+            imageRGB.release();
+        }else{
+            flipped = imageRGB;
+        }
+
+        Mat blurred = getBlurredImage(flipped);//optional. can use the hsv directly from the rgb without the blur too
+        //flipped.release();
+        Mat hsvImage = getHSVImage(blurred);
+        blurred.release();
+
+        //get a mask
+        Mat masked1 = new Mat();
+        Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked1);//for yellow ball - re calibrated
+
+        Mat masked2 = new Mat();
+        Core.inRange(hsvImage, new Scalar(37, 96, 143), new Scalar(65, 211, 232), masked2);//for green tape
+
+        hsvImage.release();
+
+        Mat morph1 = getMorphedMat(masked1);
+        masked1.release();
+        Mat morph2 = getMorphedMat(masked2);
+        masked2.release();
 
 
-        if(contours.size()>0){
-            MatOfPoint2f approxCurve = new MatOfPoint2f();
 
+        List<MatOfPoint> contours1 = getContours(morph1);
+        List<MatOfPoint> contours2 = getContours(morph2);
+
+        List<MatOfPoint> allContours = contours1;
+
+        for(MatOfPoint contour : contours2){
+            allContours.add(contour);
+        }
+
+
+        if(allContours.size()>0){
             //For each contour found
             double maxVal = 0;
-            int maxValIdx = 0;
-            for (int contourIdx = 0; contourIdx < contours.size(); contourIdx++)
+            int biggestContourId = 0;
+            int secondBiggestContourId = 0;
+            for (int contourIdx = 0; contourIdx < allContours.size(); contourIdx++)
             {
-                double contourArea = Imgproc.contourArea(contours.get(contourIdx));
+                double contourArea = Imgproc.contourArea(allContours.get(contourIdx));
                 if (maxVal < contourArea)
                 {
                     maxVal = contourArea;
-                    maxValIdx = contourIdx;
+                    secondBiggestContourId = biggestContourId;
+                    biggestContourId = contourIdx;
                 }
             }
 
-            //Convert contours(i) from MatOfPoint to MatOfPoint2f
-            MatOfPoint2f contour2f = new MatOfPoint2f( contours.get(maxValIdx).toArray() );
+            MatOfPoint2f approxCurve = new MatOfPoint2f();
+            //Convert contour from MatOfPoint to MatOfPoint2f
+            MatOfPoint2f contour2f = new MatOfPoint2f( allContours.get(secondBiggestContourId).toArray() );
             //Processing on mMOP2f1 which is in type MatOfPoint2f
             double approxDistance = Imgproc.arcLength(contour2f, true)*0.02;
             Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);
