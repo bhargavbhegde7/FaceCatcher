@@ -233,6 +233,10 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         startActivity(getIntent());
     }
 
+    public void onConfigTouch(View view){
+        Toast.makeText(getApplicationContext(), "configure", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         return false;

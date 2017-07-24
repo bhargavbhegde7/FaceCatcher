@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+android:orientation="horizontal" android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/config_ettings_parent"
+        android:layout_width="288dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+
+
+        <org.opencv.android.JavaCameraView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/config_masked_view"
+            opencv:show_fps="true"
+            opencv:camera_id="any" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/masked_view_parent"
+        android:layout_width="288dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/h_min"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/s_min"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/v_min"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/h_max"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/s_max"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+            <TableRow>
+
+                <SeekBar
+                    android:id="@+id/v_max"
+                    style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:max="255"/>
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

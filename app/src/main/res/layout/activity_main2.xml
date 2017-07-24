@@ -17,7 +17,7 @@
             opencv:camera_id="any" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/switchBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Switch Camera"
@@ -27,14 +27,24 @@
             android:layout_alignParentEnd="true" />
 
         <Button
-            android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/button"
+            android:layout_below="@+id/switchBtn"
+            android:onClick="onFlipTouch"
             android:text="Flip"
-            android:onClick="onFlipTouch"/>
+            android:id="@+id/flipBtn" />
+
+        <Button
+            android:id="@+id/configBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/flipBtn"
+            android:text="Config"
+            android:onClick="onConfigTouch"/>
 
     </RelativeLayout>
 </LinearLayout>
