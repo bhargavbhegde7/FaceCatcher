@@ -2,6 +2,9 @@ package com.image.bhargav.facecatcher;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -17,6 +20,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -30,6 +34,7 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
     private CameraBridgeViewBase mOpenCvCameraView;
     static int cameraID = 1;//frontcam - 1, back cam - 0
     static boolean isFlipOn = true;
+    private Handler mHandler;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -65,6 +70,16 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setMaxFrameSize(320, 240);
+
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                // This is where you do your work in the UI thread.
+                // Your worker tells you in the message what to do.
+
+                Toast.makeText(getApplicationContext(), "awesome!!", Toast.LENGTH_SHORT).show();
+            }
+        };
     }
 
     @Override
@@ -119,7 +134,6 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
 
         dilateElement.release();
 
-        //masked.release();
 
         return morphOutput;
     }
@@ -128,7 +142,6 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         final List<MatOfPoint> contours  = new ArrayList<>();
         final Mat hierarchy = new Mat();
         Imgproc.findContours(frame, contours , hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        //frame.release();
         return contours;
     }
 
@@ -150,77 +163,87 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         blurred.release();
 
         //get a mask
-        Mat masked1 = new Mat();
-        Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked1);//for yellow ball - re calibrated
-
-        Mat masked2 = new Mat();
-        Core.inRange(hsvImage, new Scalar(37, 96, 143), new Scalar(65, 211, 232), masked2);//for green tape
+        Mat masked = new Mat();
+        Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked);//for yellow ball - re calibrated
 
         hsvImage.release();
 
-        Mat morph1 = getMorphedMat(masked1);
-        masked1.release();
-        Mat morph2 = getMorphedMat(masked2);
-        masked2.release();
+        Mat morph = getMorphedMat(masked);
+        masked.release();
 
+        List<MatOfPoint> contours = getContours(morph);
+        morph.release();
 
+        int count = 0;
+        Point[] centers = new Point[2];
+        for(MatOfPoint contour : contours){
 
-        List<MatOfPoint> contours1 = getContours(morph1);
-        List<MatOfPoint> contours2 = getContours(morph2);
-
-        List<MatOfPoint> allContours = contours1;
-
-        for(MatOfPoint contour : contours2){
-            allContours.add(contour);
-        }
-
-
-        if(allContours.size()>0){
-            //For each contour found
-            double maxVal = 0;
-            int biggestContourId = 0;
-            int secondBiggestContourId = 0;
-            for (int contourIdx = 0; contourIdx < allContours.size(); contourIdx++)
-            {
-                double contourArea = Imgproc.contourArea(allContours.get(contourIdx));
-                if (maxVal < contourArea)
-                {
-                    maxVal = contourArea;
-                    secondBiggestContourId = biggestContourId;
-                    biggestContourId = contourIdx;
-                }
+            if(count++>2){
+                break;
             }
 
-            MatOfPoint2f approxCurve = new MatOfPoint2f();
-            //Convert contour from MatOfPoint to MatOfPoint2f
-            MatOfPoint2f contour2f = new MatOfPoint2f( allContours.get(secondBiggestContourId).toArray() );
-            //Processing on mMOP2f1 which is in type MatOfPoint2f
-            double approxDistance = Imgproc.arcLength(contour2f, true)*0.02;
-            Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);
+            drawBorder(contour, flipped);
 
-            //Convert back to MatOfPoint
-            MatOfPoint points = new MatOfPoint( approxCurve.toArray() );
+            float[] radius = new float[1];
+            Point center = new Point();
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(contour.toArray()), center, radius);
 
-            // Get bounding rect of contour
-            Rect rect = Imgproc.boundingRect(points);
-
-            // draw enclosing rectangle (all same color, but you could use variable i to make them unique)
-            Imgproc.rectangle(flipped, rect.tl(), rect.br(), new Scalar(255, 0, 0),1, 8,0);
-
+            if(count-1<2) {
+                centers[count - 1] = center;
+            }
         }
-        return getCircledFrame(flipped);
+
+        double distance = 0;
+        if(centers[0] != null && centers[1] != null){
+            Imgproc.line(flipped, centers[0], centers[1], new Scalar(0,255,0), 1);
+
+            distance = euclideanDistance(centers[0], centers[1]);
+            if(distance < 50.0){
+                //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+
+                // And this is how you call it from the worker thread:
+                Message message = mHandler.obtainMessage(1, "bhargav");
+                message.sendToTarget();
+
+            }
+        }
+
+        return flipped;
     }
 
-    public Mat getCircledFrame(Mat maskedFrame){
-
-        //circle the object in the frame
-
-
-
-        return maskedFrame;
+    public double euclideanDistance(Point a, Point b){
+        double distance = 0.0;
+        try{
+            if(a != null && b != null){
+                double xDiff = a.x - b.x;
+                double yDiff = a.y - b.y;
+                distance = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff, 2));
+            }
+        }catch(Exception e){
+            System.err.println("Something went wrong in euclideanDistance function : "+e.getMessage());
+        }
+        return distance;
     }
 
-    public void onSwitchCamTouch(View view) {
+    private void drawBorder(MatOfPoint contour, Mat frame) {
+        MatOfPoint2f approxCurve = new MatOfPoint2f();
+        //Convert contour from MatOfPoint to MatOfPoint2f
+        MatOfPoint2f contour2f = new MatOfPoint2f( contour.toArray() );
+        //Processing on mMOP2f1 which is in type MatOfPoint2f
+        double approxDistance = Imgproc.arcLength(contour2f, true)*0.02;
+        Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);
+
+        //Convert back to MatOfPoint
+        MatOfPoint points = new MatOfPoint( approxCurve.toArray() );
+
+        // Get bounding rect of contour
+        Rect rect = Imgproc.boundingRect(points);
+
+        // draw enclosing rectangle (all same color, but you could use variable i to make them unique)
+        Imgproc.rectangle(frame, rect.tl(), rect.br(), new Scalar(255, 0, 0),1, 8,0);
+    }
+
+     public void onSwitchCamTouch(View view) {
         Toast.makeText(getApplicationContext(),"changing camera", Toast.LENGTH_SHORT).show();
         cameraID = cameraID == 0?1:0;
         finish();

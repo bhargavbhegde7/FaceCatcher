@@ -11,9 +11,6 @@ android:layout_height="match_parent">
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-
-
-
         <org.opencv.android.JavaCameraView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,12 +24,13 @@ android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/masked_view_parent"
         android:layout_width="288dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
 
             <TableRow>
 
@@ -41,7 +39,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
             <TableRow>
@@ -51,7 +49,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
             <TableRow>
@@ -61,7 +59,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
             <TableRow>
@@ -71,7 +69,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
             <TableRow>
@@ -81,7 +79,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
             <TableRow>
@@ -91,7 +89,7 @@ android:layout_height="match_parent">
                     style="@android:style/Widget.DeviceDefault.Light.SeekBar"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
-                    android:max="255"/>
+                    android:max="255" />
             </TableRow>
 
         </TableLayout>
