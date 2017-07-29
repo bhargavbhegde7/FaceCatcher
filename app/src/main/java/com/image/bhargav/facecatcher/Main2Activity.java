@@ -127,7 +127,7 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         erosionElement.release();
 
         //dilate
-        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(12, 12));
+        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(15, 15));
 
         Imgproc.dilate(masked, morphOutput, dilateElement);
         Imgproc.dilate(masked, morphOutput, dilateElement);
@@ -158,21 +158,24 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         }
 
         Mat blurred = getBlurredImage(flipped);//optional. can use the hsv directly from the rgb without the blur too
-        //flipped.release();
         Mat hsvImage = getHSVImage(blurred);
         blurred.release();
 
         //get a mask
         Mat masked = new Mat();
-        Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked);//for yellow ball - re calibrated
+        //Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked);//for yellow balls - re calibrated
+        //Core.inRange(hsvImage, new Scalar(17, 168, 112), new Scalar(255, 255, 255), masked);//for yellow ball - re calibrated
+        //Core.inRange(hsvImage, new Scalar(100, 114, 77), new Scalar(166, 255, 255), masked);//for blue lids
+        Core.inRange(hsvImage, new Scalar(14, 96, 124), new Scalar(98, 225, 224), masked);//for blue lids
 
         hsvImage.release();
 
-        Mat morph = getMorphedMat(masked);
-        masked.release();
+        Mat morph = masked.clone();
+        morph = getMorphedMat(morph);
+        //masked.release();
 
         List<MatOfPoint> contours = getContours(morph);
-        morph.release();
+        //morph.release();
 
         int count = 0;
         Point[] centers = new Point[2];

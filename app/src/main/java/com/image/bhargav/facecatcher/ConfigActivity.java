@@ -45,16 +45,13 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
     SeekBar sMaxSeekBar;
     SeekBar vMaxSeekBar;
 
-    public static int h_min = 0;
-    public static int s_min = 176;
-    public static int v_min = 114;
+    public static int h_min = 9;
+    public static int s_min = 82;
+    public static int v_min = 145;
 
-    public static int h_max = 30;
-    public static int s_max = 255;
+    public static int h_max = 33;
+    public static int s_max = 227;
     public static int v_max = 255;
-
-    public static int blockSize = 15;
-    public static double C = 40;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -157,15 +154,15 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat morphOutput = new Mat();
 
         //erode
-        Mat erosionElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(34, 34));
+        Mat erosionElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(30, 30));
 
-        Imgproc.erode(masked, morphOutput, erosionElement);//use blurred instead of masked1 here to display the image without mask
+        Imgproc.erode(masked, morphOutput, erosionElement);
         Imgproc.erode(masked, morphOutput, erosionElement);
 
         erosionElement.release();
 
         //dilate
-        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(15, 15));
+        Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new  Size(20, 20));
 
         Imgproc.dilate(masked, morphOutput, dilateElement);
         Imgproc.dilate(masked, morphOutput, dilateElement);
@@ -200,7 +197,8 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
         Core.inRange(hsvImage, new Scalar(h_min, s_min, v_min), new Scalar(h_max, s_max, v_max), masked);//for yellow ball - re calibrated
         hsvImage.release();
 
-        Mat morphed = getMorphedMat(masked);
+        Mat morphed = masked.clone();
+        morphed = getMorphedMat(morphed);
         masked.release();
 
         //List<MatOfPoint> contours = getContours(morphed);
