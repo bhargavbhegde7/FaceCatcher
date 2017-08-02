@@ -45,12 +45,12 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
     SeekBar sMaxSeekBar;
     SeekBar vMaxSeekBar;
 
-    public static int h_min = 9;
-    public static int s_min = 82;
-    public static int v_min = 145;
+    public static int h_min = 10;
+    public static int s_min = 26;
+    public static int v_min = 161;
 
-    public static int h_max = 33;
-    public static int s_max = 227;
+    public static int h_max = 35;
+    public static int s_max = 134;
     public static int v_max = 255;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -197,9 +197,9 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
         Core.inRange(hsvImage, new Scalar(h_min, s_min, v_min), new Scalar(h_max, s_max, v_max), masked);//for yellow ball - re calibrated
         hsvImage.release();
 
-        Mat morphed = masked.clone();
-        morphed = getMorphedMat(morphed);
-        masked.release();
+        //Mat morphed = masked.clone();
+        //morphed = getMorphedMat(morphed);
+        //masked.release();
 
         //List<MatOfPoint> contours = getContours(morphed);
         //morphed.release();
@@ -240,7 +240,7 @@ public class ConfigActivity extends Activity implements CameraBridgeViewBase.CvC
 
         //---------------------------------------------------------
 
-        return morphed;
+        return masked;
     }
 
     @Override

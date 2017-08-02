@@ -166,7 +166,8 @@ public class Main2Activity extends Activity implements CameraBridgeViewBase.CvCa
         //Core.inRange(hsvImage, new Scalar(0, 176, 114), new Scalar(30, 255, 255), masked);//for yellow balls - re calibrated
         //Core.inRange(hsvImage, new Scalar(17, 168, 112), new Scalar(255, 255, 255), masked);//for yellow ball - re calibrated
         //Core.inRange(hsvImage, new Scalar(100, 114, 77), new Scalar(166, 255, 255), masked);//for blue lids
-        Core.inRange(hsvImage, new Scalar(14, 96, 124), new Scalar(98, 225, 224), masked);//for blue lids
+        //Core.inRange(hsvImage, new Scalar(14, 96, 124), new Scalar(98, 225, 224), masked);//for blue lids
+        Core.inRange(hsvImage, new Scalar(14, 42, 203), new Scalar(166, 133, 255), masked);//for blue lids
 
         hsvImage.release();
 
