@@ -3,6 +3,7 @@
     package="com.image.bhargav.facecatcher">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -25,22 +26,26 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity
             android:name=".Main2Activity"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".ConfigActivity"
+            android:label="@string/title_activity_config"
+            android:screenOrientation="landscape" />
+        <activity android:name=".TouchSender">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".DrawScreen"
+            android:label="@string/title_activity_draw_screen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-        </activity>
-        <activity
-            android:name=".ConfigActivity"
-            android:label="@string/title_activity_config"
-            android:screenOrientation="landscape">
-
-
-
         </activity>
     </application>
 

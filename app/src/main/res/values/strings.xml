@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">FaceCatcher</string>
     <string name="title_activity_config">ConfigActivity</string>
+
+    <string name="title_activity_touch_sender">TouchSender</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_draw_screen">DrawScreen</string>
 </resources>
